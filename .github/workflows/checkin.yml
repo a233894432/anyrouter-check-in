@@ -1,7 +1,12 @@
 name: AnyRouter 自动签到
 on:
   schedule:
-    - cron: '0 */6 * * *'
+    # 第一次执行：北京时间 9:00 / UTC 1:00
+    - cron: '0 1 * * *'
+    # 第二次执行：北京时间 10:00 / UTC 2:00
+    - cron: '0 2 * * *'
+    # 第三次执行：北京时间 11:00 / UTC 3:00
+    - cron: '0 3 * * *'
   workflow_dispatch:
 
 jobs:
@@ -12,6 +17,17 @@ jobs:
       PYTHONIOENCODING: utf-8
     steps:
     - uses: actions/checkout@v4
+    
+    # ⬇️ 新增：随机等待步骤
+    - name: ⏳ 随机等待启动
+      run: |
+        # 生成 0 到 3600 秒（即 0 到 60 分钟）之间的随机秒数
+        $seconds = Get-Random -Maximum 1800 
+        $minutes = [System.Math]::Floor($seconds / 60)
+        $remainingSeconds = $seconds % 60
+        
+        Write-Host "任务将在 $minutes 分钟 $remainingSeconds 秒后执行，模拟随机签到时间..."
+        Start-Sleep -Seconds $seconds 
 
     - uses: astral-sh/setup-uv@v3
       with:
